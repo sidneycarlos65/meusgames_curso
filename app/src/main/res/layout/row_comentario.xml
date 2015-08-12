@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableRow xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/row_below">
+
+        <ImageView
+            android:id="@+id/img_user"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/anon_user"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginLeft="16dp"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/txt_nome_usuario"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Usuário 1"/>
+
+            <TextView
+                android:id="@+id/txt_comentario"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="FIFA 15 é um jogo eletrônico de simulação de Futebol desenvolvido pela EA Sports. É um jogo que foi lançado nas plataformas: Microsoft Windows, Nintendo 3DS, Playstation 3, Playstation 4, Playstation Vita, Xbox 360, Xbox One, Wii, iOS e Android."/>
+
+        </LinearLayout>
+
+</TableRow>
