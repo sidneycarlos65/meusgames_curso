@@ -177,9 +177,6 @@ public class CadastroGameActivity extends BaseActivity {
 
         Toast.makeText(this, "Game cadastrado com sucesso!", Toast.LENGTH_SHORT).show();
 
-        Intent returnIntent = new Intent();
-        returnIntent.putExtra("result", game);
-        setResult(RESULT_OK, returnIntent);
         finish();
 
     }

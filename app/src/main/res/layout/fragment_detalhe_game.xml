@@ -1,0 +1,80 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/img_game"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:scaleType="fitXY"
+        android:layout_below="@id/toolbar"/>
+
+    <TextView
+        fontPath="fonts/Roboto-Medium.ttf"
+        android:id="@+id/text_nome"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/img_game"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_below="@id/toolbar"/>
+
+    <TextView
+        android:id="@+id/text_pontuacao"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/img_game"
+        android:layout_below="@+id/text_ano"
+        android:layout_marginTop="8dp" />
+
+    <TextView
+        android:id="@+id/text_ano"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/text_nome"
+        android:layout_toRightOf="@id/img_game"
+        android:layout_marginTop="8dp"/>
+
+    <TextView
+        android:id="@+id/text_categorias"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/img_game"
+        android:layout_below="@+id/text_pontuacao"
+        android:layout_marginTop="8dp" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/img_game"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/img_game"
+            android:orientation="vertical">
+
+            <TableLayout
+                android:id="@+id/table_comentarios"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:stretchColumns="2"
+                android:layout_weight="1">
+            </TableLayout>
+
+            <Button
+                android:id="@+id/btn_ver_mais"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Ver Mais"/>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</RelativeLayout>

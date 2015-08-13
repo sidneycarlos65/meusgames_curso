@@ -1,6 +1,7 @@
 package br.com.cocobongo.meusgames;
 
 import android.app.Application;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,12 +14,13 @@ import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
  */
 public class MeusGamesApplication extends Application {
 
-    static List<Game> games = new ArrayList<Game>();
+    public static List<Game> games;
 
     @Override
     public void onCreate() {
         super.onCreate();
 
+        games = new ArrayList<Game>();
         CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
                         .setDefaultFontPath("fonts/Roboto-Regular.ttf")
                         .setFontAttrId(R.attr.fontPath)

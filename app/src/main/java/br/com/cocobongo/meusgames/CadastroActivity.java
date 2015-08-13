@@ -1,12 +1,10 @@
 package br.com.cocobongo.meusgames;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 
 import com.daimajia.androidanimations.library.Techniques;
@@ -49,11 +47,6 @@ public class CadastroActivity extends BaseActivity {
         if(!validaForm()){
             finish();
         }
-    }
-
-    @OnClick(R.id.btn_voltar)
-    public void onClickBtnVoltar(View view) {
-        finish();
     }
 
     private boolean validaForm() {

@@ -40,4 +40,7 @@
     <string name="label_categorias">Categorias (separadas por vírgula)</string>
     <string name="label_plataformas">Plataformas (separadas por vírgula)</string>
     <string name="label_cancelar">Cancelar</string>
+    <string name="hint_digite_email">Digite seu e-mail</string>
+    <string name="hint_digite_senha">Digite sua senha</string>
+    <string name="label_enviar">Enviar</string>
 </resources>

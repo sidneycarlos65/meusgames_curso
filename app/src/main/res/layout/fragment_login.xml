@@ -1,0 +1,39 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent" android:layout_width="match_parent"
+    android:padding="@dimen/activity_vertical_margin">
+
+    <EditText
+        android:id="@+id/edit_login"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/hint_digite_email"
+        android:inputType="textEmailAddress"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_below="@id/toolbar"/>
+
+    <EditText
+        android:id="@+id/edit_senha"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/edit_login"
+        android:inputType="textPassword"
+        android:hint="@string/hint_digite_senha"/>
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/button_ok"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/edit_senha"
+        android:layout_marginTop="16dp"
+        android:text="@string/label_enviar"/>
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/button_cadastrar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/button_ok"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:text="Cadastrar"/>
+
+</RelativeLayout>
