@@ -1,0 +1,46 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:layout_below="@id/toolbar">
+
+        <FrameLayout
+            android:id="@+id/container_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.60"
+            android:visibility="gone">
+
+            <fragment
+                android:id="@+id/fragment_games_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:name="br.com.cocobongo.meusgames.fragments.GamesListFragment"
+                tools:layout="@layout/fragment_list_games">
+
+            </fragment>
+
+        </FrameLayout>
+
+
+        <FrameLayout
+            android:id="@+id/container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.40">
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

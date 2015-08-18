@@ -1,5 +1,6 @@
 package br.com.cocobongo.meusgames.fragments;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -21,6 +22,7 @@ import br.com.cocobongo.meusgames.GameActivity;
 import br.com.cocobongo.meusgames.MeusGamesApplication;
 import br.com.cocobongo.meusgames.R;
 import br.com.cocobongo.meusgames.adapters.GamesAdapter;
+import br.com.cocobongo.meusgames.helpers.Helpers;
 import br.com.cocobongo.meusgames.modelos.Game;
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -32,6 +34,13 @@ public class GamesListFragment extends Fragment implements GamesAdapter.GamesAda
 
     @Bind(R.id.lista_games)
     RecyclerView listaGames;
+
+    private GamesAdapter.GamesAdapterListener gamesAdapterListener;
+    private GamesAdapter gamesAdapter;
+
+    public void setGamesAdapterListener(GamesAdapter.GamesAdapterListener gamesAdapterListener) {
+        this.gamesAdapterListener = gamesAdapterListener;
+    }
 
     public static GamesListFragment newInstance() {
         return new GamesListFragment();
@@ -49,7 +58,7 @@ public class GamesListFragment extends Fragment implements GamesAdapter.GamesAda
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initListaGames();
-        GamesAdapter gamesAdapter = new GamesAdapter(MeusGamesApplication.games, getActivity(), this);
+        gamesAdapter = new GamesAdapter(MeusGamesApplication.games, getActivity(), this);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL,
                 false);
         listaGames.setLayoutManager(layoutManager);
@@ -95,9 +104,16 @@ public class GamesListFragment extends Fragment implements GamesAdapter.GamesAda
 
     @Override
     public void onGameSelected(Game game) {
-        Intent intent = new Intent(getActivity(), GameActivity.class);
-        intent.putExtra("game", game);
-        startActivity(intent);
+
+        if(Helpers.isTablet(getActivity()) && gamesAdapterListener != null){
+            gamesAdapterListener.onGameSelected(game);
+        }
+        else{
+            Intent intent = new Intent(getActivity(), GameActivity.class);
+            intent.putExtra("game", game);
+            startActivity(intent);
+        }
+
     }
 
     @Override
@@ -125,9 +141,20 @@ public class GamesListFragment extends Fragment implements GamesAdapter.GamesAda
 
         if (id == R.id.action_add_game) {
             Intent intent = new Intent(getActivity(), CadastroGameActivity.class);
-            startActivity(intent);
+            startActivityForResult(intent, 103);
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (Activity.RESULT_CANCELED == resultCode) {
+            return;
+        }
+
+        if (103 == requestCode && resultCode == Activity.RESULT_OK && null != gamesAdapter) {
+            gamesAdapter.notifyDataSetChanged();
+        }
     }
 }

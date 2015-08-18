@@ -4,8 +4,8 @@
 
     <ImageView
         android:id="@+id/img_game"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="@dimen/size_cover_game"
+        android:layout_height="@dimen/size_cover_game"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
         android:layout_marginTop="@dimen/activity_vertical_margin"

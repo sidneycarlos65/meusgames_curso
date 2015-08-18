@@ -1,5 +1,7 @@
 package br.com.cocobongo.meusgames.fragments;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -150,4 +152,32 @@ public class GameDetalheFragment extends Fragment {
         super.onDestroyView();
         ButterKnife.unbind(this);
     }
+
+    public void onClickEmail(View view){
+
+        Intent email = new Intent(Intent.ACTION_SENDTO);
+        email.setData(Uri.parse("mailto:sidneycarlos65@gmail.com"));
+        email.putExtra(Intent.EXTRA_EMAIL, new String[]{"meusgames@gmail.com"});
+        email.putExtra(Intent.EXTRA_TEXT, game.getSiteOficial());
+        email.putExtra(Intent.EXTRA_SUBJECT, game.getNome());
+
+        if(email.resolveActivity(getActivity().getPackageManager()) != null){
+            startActivity(email);
+        }
+
+    }
+
+
+    @OnClick(R.id.img_game)
+    public void onClickShare(View view){
+
+        Intent share = new Intent(Intent.ACTION_SEND);
+        share.setType("text/plain");
+        share.putExtra(Intent.EXTRA_TEXT, game.getNome());
+        if(share.resolveActivity(getActivity().getPackageManager()) != null){
+            startActivity(share);
+        }
+
+    }
+
 }

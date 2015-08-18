@@ -3,4 +3,5 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="row_below">16dp</dimen>
+    <dimen name="size_cover_game">100dp</dimen>
 </resources>
