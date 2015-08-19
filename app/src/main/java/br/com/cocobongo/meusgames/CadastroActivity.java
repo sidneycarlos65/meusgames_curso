@@ -1,15 +1,27 @@
 package br.com.cocobongo.meusgames;
 
+import android.app.ProgressDialog;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
+import java.io.IOException;
+import java.util.HashMap;
+
+import br.com.cocobongo.meusgames.helpers.HttpHelper;
+import br.com.cocobongo.meusgames.modelos.Usuario;
+import br.com.cocobongo.meusgames.servicos.UsuarioService;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -45,7 +57,20 @@ public class CadastroActivity extends BaseActivity {
     @OnClick(R.id.btn_ok)
     public void onClickBtnOk(View view) {
         if(!validaForm()){
-            finish();
+
+            String nome = editNome.getText().toString();
+            String email = editEmail.getText().toString();
+            String endereco = editEndereco.getText().toString();
+            String senha = editSenha.getText().toString();
+
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("nome", nome);
+            jsonObject.addProperty("email", email);
+            jsonObject.addProperty("senha", senha);
+            jsonObject.addProperty("endereco", endereco);
+
+            new CadastroUsuarioTask().execute(jsonObject);
+
         }
     }
 
@@ -105,6 +130,64 @@ public class CadastroActivity extends BaseActivity {
 
     }
 
+    /**
+     * Classe para chamadas assincronas.
+     * Parametros do AsyncTask<parametros, progresso, retorno>
+     */
+    private class CadastroUsuarioTask extends AsyncTask<JsonObject, Void, Usuario>{
+
+        ProgressDialog progressDialog;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = ProgressDialog.show(CadastroActivity.this,
+                    getString(R.string.app_name), "Aguarde...");
+        }
+
+        @Override
+        protected Usuario doInBackground(JsonObject... params) {
+
+            String param = params[0].toString();
+
+            try {
+                HttpHelper httpHelper = new HttpHelper();
+                httpHelper.setContentType("application/json");
+                String jsonUsuario = httpHelper.doPost(Constantes.URL_SIGNUP, param, "UTF-8");
+
+                if(null != jsonUsuario){
+                    Gson gson = new Gson();
+                    return gson.fromJson(jsonUsuario, Usuario.class);
+                }
+
+            } catch (IOException e) {
+                Log.e("UsuarioService", e.getMessage());
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Usuario usuario) {
+            super.onPostExecute(usuario);
+            if(null != progressDialog && progressDialog.isShowing()){
+                progressDialog.dismiss();
+            }
+
+            if(null != usuario){
+                CadastroActivity.this.finish();
+                Toast.makeText(CadastroActivity.this, "Cadastrado com sucesso",
+                        Toast.LENGTH_SHORT);
+            }
+            else{
+                Toast.makeText(CadastroActivity.this, "Ops! Erro ao cadastrar usuario",
+                        Toast.LENGTH_SHORT);
+            }
+
+        }
+
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -126,4 +209,5 @@ public class CadastroActivity extends BaseActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
 }

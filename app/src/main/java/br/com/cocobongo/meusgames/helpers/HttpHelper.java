@@ -221,6 +221,55 @@ public class HttpHelper {
 
     }
 
+    public String doPost(String url, String params, String charset) throws IOException {
+        if (LOG_ON) {
+            Log.d(TAG, ">> Http.doPost: " + url);
+        }
+
+        URL u = new URL(url);
+        HttpURLConnection conn = null;
+        String s = null;
+        try {
+            conn = (HttpURLConnection) u.openConnection();
+            if (contentType != null) {
+                conn.setRequestProperty("Content-Type", contentType);
+            }
+            conn.setRequestMethod("POST");
+            conn.setConnectTimeout(TIMEOUT_MILLIS);
+            conn.setReadTimeout(TIMEOUT_MILLIS);
+            conn.setDoOutput(true);
+            conn.setDoInput(true);
+            conn.connect();
+
+            if (params != null) {
+                OutputStream out = conn.getOutputStream();
+                out.write(params.getBytes(charset));
+                out.flush();
+                out.close();
+            }
+            InputStream in = null;
+            int status = conn.getResponseCode();
+            if (status >= HttpURLConnection.HTTP_BAD_REQUEST) {
+                Log.d(TAG, "Error code: " + status);
+                in = conn.getErrorStream();
+            } else {
+                in = conn.getInputStream();
+            }
+            s = IOUtils.toString(in, charset);
+            if (LOG_ON) {
+                Log.d(TAG, "<< Http.doPost: " + s);
+            }
+            in.close();
+        } catch (IOException e) {
+            throw e;
+        } finally {
+            if (conn != null) {
+                conn.disconnect();
+            }
+        }
+        return s;
+    }
+
     public void setContentType(String contentType) {
         this.contentType = contentType;
     }

@@ -1,20 +1,32 @@
 package br.com.cocobongo.meusgames.fragments;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
+
+import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 import br.com.cocobongo.meusgames.CadastroActivity;
+import br.com.cocobongo.meusgames.Constantes;
 import br.com.cocobongo.meusgames.R;
+import br.com.cocobongo.meusgames.helpers.HttpHelper;
 import br.com.cocobongo.meusgames.modelos.Usuario;
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -75,7 +87,16 @@ public class LoginFragment extends Fragment {
     @OnClick(R.id.button_ok)
     public void onClickBtnOk(View view){
         if(!validaForm()){
-            listener.onLogin(new Usuario());  //TODO: mudar retorno para quando tiver o servico
+
+            String email = editLogin.getText().toString();
+            String senha = editSenha.getText().toString();
+
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("email", email);
+            jsonObject.addProperty("senha", senha);
+
+            new LoginAyncTask().execute(jsonObject);
+
         }
     }
 
@@ -108,5 +129,55 @@ public class LoginFragment extends Fragment {
         }
 
         return error;
+    }
+
+    private class LoginAyncTask extends AsyncTask<JsonObject, Void, Usuario>{
+
+        ProgressDialog progressDialog;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = ProgressDialog.show(getActivity(), getString(R.string.app_name),
+                    "Aguarde...");
+        }
+
+        @Override
+        protected Usuario doInBackground(JsonObject... params) {
+
+            String param = params[0].toString();
+
+            try {
+                HttpHelper httpHelper = new HttpHelper();
+                httpHelper.setContentType("application/json");
+                String jsonUsuario = httpHelper.doPost(Constantes.URL_LOGIN, param, "UTF-8");
+                return new Gson().fromJson(jsonUsuario, Usuario.class);
+            } catch (IOException e) {
+                Log.e("LoginAsyncTask", e.getMessage());
+            } catch (JsonSyntaxException jse){
+                return null;
+            }
+
+            return null;
+
+        }
+
+        @Override
+        protected void onPostExecute(Usuario usuario) {
+            super.onPostExecute(usuario);
+            if(null != progressDialog && progressDialog.isShowing()){
+                progressDialog.dismiss();
+            }
+
+            if(usuario != null){
+                Toast.makeText(getActivity(), "Bem vindo " + usuario.getNome(), Toast.LENGTH_SHORT)
+                        .show();
+                listener.onLogin(usuario);
+            }
+            else{
+                Toast.makeText(getActivity(), "Login/Senha inválidos", Toast.LENGTH_SHORT).show();
+            }
+
+        }
     }
 }

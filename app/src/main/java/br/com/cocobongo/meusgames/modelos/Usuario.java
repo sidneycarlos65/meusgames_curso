@@ -1,11 +1,15 @@
 package br.com.cocobongo.meusgames.modelos;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by gu on 10/08/15.
  */
 public class Usuario {
 
+    @SerializedName("_id")
     private String id;
+
     private String nome;
     private String email;
     private String senha;
@@ -13,6 +17,10 @@ public class Usuario {
     private String endereco;
     private double latitude;
     private double longitude;
+    private String token;
+
+    @SerializedName("exp")
+    private long validadeToken;
 
     public String getId() {
         return id;
@@ -76,5 +84,21 @@ public class Usuario {
 
     public void setLongitude(double longitude) {
         this.longitude = longitude;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public long getValidadeToken() {
+        return validadeToken;
+    }
+
+    public void setValidadeToken(long validadeToken) {
+        this.validadeToken = validadeToken;
     }
 }
