@@ -19,6 +19,9 @@ import com.daimajia.androidanimations.library.YoYo;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
+import com.koushikdutta.ion.Response;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
@@ -95,7 +98,35 @@ public class LoginFragment extends Fragment {
             jsonObject.addProperty("email", email);
             jsonObject.addProperty("senha", senha);
 
-            new LoginAyncTask().execute(jsonObject);
+            final ProgressDialog progressDialog =
+                    ProgressDialog.show(getActivity(), getString(R.string.app_name), "Aguarde...");
+            progressDialog.show();
+
+            Ion.with(getActivity())
+                    .load(Constantes.URL_LOGIN)
+                    .setJsonObjectBody(jsonObject)
+                    .as(Usuario.class)
+                    .withResponse()
+                    .setCallback(new FutureCallback<Response<Usuario>>() {
+                        @Override
+                        public void onCompleted(Exception e, Response<Usuario> result) {
+
+                            if(progressDialog.isShowing()){
+                                progressDialog.dismiss();
+                            }
+
+                            int status = result.getHeaders().code();
+
+                            if(status != 200 || e != null){
+                                Toast.makeText(getActivity(), "Usuário não encontrado",
+                                        Toast.LENGTH_LONG).show();
+
+                                return;
+                            }
+
+                            listener.onLogin(result.getResult());
+                        }
+                    });
 
         }
     }
