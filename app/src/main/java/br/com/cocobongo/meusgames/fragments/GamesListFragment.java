@@ -1,6 +1,7 @@
 package br.com.cocobongo.meusgames.fragments;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -13,15 +14,18 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
-import java.util.ArrayList;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Response;
+
 import java.util.List;
 
 import br.com.cocobongo.meusgames.CadastroGameActivity;
 import br.com.cocobongo.meusgames.GameActivity;
-import br.com.cocobongo.meusgames.MeusGamesApplication;
 import br.com.cocobongo.meusgames.R;
 import br.com.cocobongo.meusgames.adapters.GamesAdapter;
+import br.com.cocobongo.meusgames.api.MeusGamesAPI;
 import br.com.cocobongo.meusgames.helpers.Helpers;
 import br.com.cocobongo.meusgames.modelos.Game;
 import butterknife.Bind;
@@ -37,6 +41,7 @@ public class GamesListFragment extends Fragment implements GamesAdapter.GamesAda
 
     private GamesAdapter.GamesAdapterListener gamesAdapterListener;
     private GamesAdapter gamesAdapter;
+    private MeusGamesAPI meusGamesAPI;
 
     public void setGamesAdapterListener(GamesAdapter.GamesAdapterListener gamesAdapterListener) {
         this.gamesAdapterListener = gamesAdapterListener;
@@ -57,49 +62,40 @@ public class GamesListFragment extends Fragment implements GamesAdapter.GamesAda
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        initListaGames();
-        gamesAdapter = new GamesAdapter(MeusGamesApplication.games, getActivity(), this);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL,
-                false);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(),
+                LinearLayoutManager.VERTICAL, false);
         listaGames.setLayoutManager(layoutManager);
         listaGames.setHasFixedSize(true);  //otimiza a recycleview, falando que a dimensao do item nao muda
-        listaGames.setAdapter(gamesAdapter);
+
+        getGames();
     }
 
-    private void initListaGames(){
-        Game game1 = new Game();
-        game1.setNome("Fifa 2015");
-        game1.setAno(2015);
-        game1.setPontuacao(9.5);
-        game1.setImage("http://www.geracaogames.com.br/images_produtos/2e6acd34e5.jpg");
+    private void getGames(){
 
-        Game game2 = new Game();
-        game2.setNome("Dota 2");
-        game2.setAno(2013);
-        game2.setPontuacao(5);
-        game2.setImage("http://shadowkeepers.com.br/images/skill/xIMG478082389_thumb.jpg.pagespeed.ic.Q5yh0uwH2r.jpg");
+        final ProgressDialog progressDialog =
+                ProgressDialog.show(getActivity(), getString(R.string.app_name), "Aguarde...");
 
-        Game game3 = new Game();
-        game3.setNome("Clash of Clans");
-        game3.setAno(2012);
-        game3.setPontuacao(10);
-        game3.setImage("http://shadowkeepers.com.br/images/skill/xIMG1754449374_thumb.jpg.pagespeed.ic.IytOTaLgn_.jpg");
-        List<String> categorias = new ArrayList<String>();
-        categorias.add("Estratégia");
-        game3.setCategorias(categorias);
+        meusGamesAPI = new MeusGamesAPI(getActivity());
+        meusGamesAPI.games(new FutureCallback<Response<List<Game>>>() {
+            @Override
+            public void onCompleted(Exception e, Response<List<Game>> result) {
+                if(200 != result.getHeaders().code()){
+                    Toast.makeText(getActivity(), "Não foi possível recuperar os games!",
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-        Game game4 = new Game();
-        game4.setNome("Batman Arkham Knight");
-        game4.setAno(2015);
-        game4.setPontuacao(8);
-        game4.setImage("http://gamewebster.net/wp-content/uploads/2015/06/BatmanArkhamKnight-300x400.jpg");
+                gamesAdapter = new GamesAdapter(result.getResult(), getActivity(),
+                        GamesListFragment.this);
+                listaGames.setAdapter(gamesAdapter);
 
-//        List<Game> games = new ArrayList<Game>();
-        MeusGamesApplication.games.clear();
-        MeusGamesApplication.games.add(game1);
-        MeusGamesApplication.games.add(game2);
-        MeusGamesApplication.games.add(game3);
-        MeusGamesApplication.games.add(game4);
+                if(progressDialog.isShowing()){
+                    progressDialog.dismiss();
+                }
+
+            }
+        });
     }
 
     @Override
@@ -154,7 +150,8 @@ public class GamesListFragment extends Fragment implements GamesAdapter.GamesAda
         }
 
         if (103 == requestCode && resultCode == Activity.RESULT_OK && null != gamesAdapter) {
-            gamesAdapter.notifyDataSetChanged();
+//            gamesAdapter.notifyDataSetChanged();
+            getGames();
         }
     }
 }

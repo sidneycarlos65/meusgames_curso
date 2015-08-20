@@ -35,14 +35,22 @@ public class MainActivity extends BaseActivity implements LoginFragment.LoginFra
         ButterKnife.bind(this);
         initToolbar();
 
-        loginFragment = LoginFragment.newInstance(this);
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.container, loginFragment).commit();
+        if (MeusGamesApplication.token == null) {
+            loginFragment = LoginFragment.newInstance(this);
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.container, loginFragment).commit();
+        } else {
+            addFragmentGames();
+        }
     }
 
     @Override
     public void onLogin(Usuario usuario) {
 
+        addFragmentGames();
+    }
+
+    private void addFragmentGames() {
         final FragmentManager fragmentManager = getSupportFragmentManager();
 
         if (Helpers.isTablet(this) && containerList != null) {

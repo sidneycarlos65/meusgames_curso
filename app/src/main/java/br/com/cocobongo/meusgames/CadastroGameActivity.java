@@ -16,12 +16,15 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Response;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
+import br.com.cocobongo.meusgames.api.MeusGamesAPI;
 import br.com.cocobongo.meusgames.modelos.Game;
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -56,6 +59,7 @@ public class CadastroGameActivity extends BaseActivity {
     Game game = new Game();
 
     private Uri mImageCaptureUri;
+    private MeusGamesAPI meusGamesAPI;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -178,13 +182,28 @@ public class CadastroGameActivity extends BaseActivity {
 
         MeusGamesApplication.games.add(game);
 
-        Toast.makeText(this, "Game cadastrado com sucesso!", Toast.LENGTH_SHORT).show();
+        meusGamesAPI = new MeusGamesAPI(this);
+        meusGamesAPI.cadastrarGame(game, new FutureCallback<Response<Game>>() {
+            @Override
+            public void onCompleted(Exception e, Response<Game> result) {
 
-        Intent intent = new Intent();
-        intent.putExtra("result", true);
-        setResult(Activity.RESULT_OK, intent);
+                if (Constantes.HTTP_CODE_200_SUCCESS != result.getHeaders().code()) {
+                    Toast.makeText(getBaseContext(), "Erro ao cadastrar o jogo",
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-        finish();
+                Toast.makeText(getBaseContext(), "Game cadastrado com sucesso!",
+                        Toast.LENGTH_SHORT).show();
+
+                Intent intent = new Intent();
+                intent.putExtra("result", true);
+                setResult(Activity.RESULT_OK, intent);
+
+                finish();
+
+            }
+        });
 
     }
 }

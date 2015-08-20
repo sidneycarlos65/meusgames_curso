@@ -1,5 +1,7 @@
 package br.com.cocobongo.meusgames.modelos;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -8,6 +10,7 @@ import java.util.List;
  */
 public class Game implements Serializable {
 
+    @SerializedName("_id")
     private String id;
     private String nome;
     private String descricao;

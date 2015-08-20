@@ -28,7 +28,9 @@ import java.util.concurrent.ExecutionException;
 
 import br.com.cocobongo.meusgames.CadastroActivity;
 import br.com.cocobongo.meusgames.Constantes;
+import br.com.cocobongo.meusgames.MeusGamesApplication;
 import br.com.cocobongo.meusgames.R;
+import br.com.cocobongo.meusgames.api.MeusGamesAPI;
 import br.com.cocobongo.meusgames.helpers.HttpHelper;
 import br.com.cocobongo.meusgames.modelos.Usuario;
 import butterknife.Bind;
@@ -46,6 +48,8 @@ public class LoginFragment extends Fragment {
     @Bind(R.id.edit_senha)
     EditText editSenha;
 
+    private MeusGamesAPI meusGamesAPI;
+
     private LoginFragmentListener listener;
 
     public static LoginFragment newInstance(LoginFragmentListener listener) {
@@ -58,6 +62,12 @@ public class LoginFragment extends Fragment {
      * Um fragment não pode ter um construtor com parametros
      */
     public LoginFragment() {
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        meusGamesAPI = new MeusGamesAPI(getActivity());
     }
 
     @Nullable
@@ -102,31 +112,31 @@ public class LoginFragment extends Fragment {
                     ProgressDialog.show(getActivity(), getString(R.string.app_name), "Aguarde...");
             progressDialog.show();
 
-            Ion.with(getActivity())
-                    .load(Constantes.URL_LOGIN)
-                    .setJsonObjectBody(jsonObject)
-                    .as(Usuario.class)
-                    .withResponse()
-                    .setCallback(new FutureCallback<Response<Usuario>>() {
-                        @Override
-                        public void onCompleted(Exception e, Response<Usuario> result) {
+            meusGamesAPI.login(jsonObject, new FutureCallback<Response<Usuario>>() {
+                @Override
+                public void onCompleted(Exception e, Response<Usuario> result) {
 
-                            if(progressDialog.isShowing()){
-                                progressDialog.dismiss();
-                            }
+                    if (progressDialog.isShowing()) {
+                        progressDialog.dismiss();
+                    }
 
-                            int status = result.getHeaders().code();
+                    int status = result.getHeaders().code();
 
-                            if(status != 200 || e != null){
-                                Toast.makeText(getActivity(), "Usuário não encontrado",
-                                        Toast.LENGTH_LONG).show();
+                    if (status != 200 || e != null) {
+                        Toast.makeText(getActivity(), "Usuário não encontrado",
+                                Toast.LENGTH_LONG).show();
 
-                                return;
-                            }
+                        return;
+                    }
 
-                            listener.onLogin(result.getResult());
-                        }
-                    });
+                    MeusGamesApplication app =
+                            (MeusGamesApplication) getActivity().getApplication();
+                    Usuario usuario = result.getResult();
+                    app.saveToken(usuario.getToken(), usuario.getValidadeToken());
+
+                    listener.onLogin(usuario);
+                }
+            });
 
         }
     }
