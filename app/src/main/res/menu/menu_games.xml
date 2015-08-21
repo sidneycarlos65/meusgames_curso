@@ -2,7 +2,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="br.com.cocobongo.meusgames.GamesActivity">
+    <item android:id="@+id/action_sync_games" android:icon="@drawable/ic_sync_white_24dp"
+        android:title="Sincronizar"
+        android:orderInCategory="100" app:showAsAction="ifRoom"/>
     <item android:id="@+id/action_add_game" android:icon="@drawable/ic_add_white_24dp"
         android:title="Adicionar Game"
-        android:orderInCategory="100" app:showAsAction="ifRoom"/>
+        android:orderInCategory="101" app:showAsAction="ifRoom"/>
 </menu>

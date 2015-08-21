@@ -9,6 +9,7 @@ import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 import com.koushikdutta.ion.Response;
 
+import java.io.File;
 import java.util.List;
 
 import br.com.cocobongo.meusgames.Constantes;
@@ -37,7 +38,8 @@ public class MeusGamesAPI {
     public void games(FutureCallback<Response<List<Game>>> callback){
         String token = MeusGamesApplication.token;
         Ion.with(context).load(Constantes.URL_GAMES).addHeader("X-Access-Token", token)
-                .as(new TypeToken<List<Game>>() {})
+                .as(new TypeToken<List<Game>>() {
+                })
                 .withResponse().setCallback(callback);
 
     }
@@ -46,6 +48,15 @@ public class MeusGamesAPI {
         String token = MeusGamesApplication.token;
         Ion.with(context).load(Constantes.URL_GAMES).addHeader("X-Access-Token", token)
                 .setJsonPojoBody(game).as(Game.class).withResponse().setCallback(callback);
+    }
+
+    public void upload(String idGame, File image, FutureCallback<Response<Game>> callback){
+        String token = MeusGamesApplication.token;
+        Ion.with(context).load(Constantes.URL_GAMES_UPLOAD_IMAGE + idGame)
+                .addHeader("X-Access-Token", token)
+                .setMultipartFile("file", image).as(Game.class).withResponse()
+                .setCallback(callback);
+
     }
 
 }

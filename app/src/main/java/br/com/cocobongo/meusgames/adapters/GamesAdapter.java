@@ -14,6 +14,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import br.com.cocobongo.meusgames.Constantes;
 import br.com.cocobongo.meusgames.R;
 import br.com.cocobongo.meusgames.modelos.Game;
 import butterknife.Bind;
@@ -80,7 +81,7 @@ public class GamesAdapter extends RecyclerView.Adapter<GamesAdapter.ViewHolder>{
         holder.nomeGame.setText(game.getNome());
         holder.anoGame.setText(context.getString(R.string.lbl_ano, game.getAno()));
         holder.pontuacaoGame.setText(context.getString(R.string.lbl_pontuacao, game.getPontuacao()));
-        Picasso.with(context).load(game.getImage()).into(holder.imageGame);
+        Picasso.with(context).load(Constantes.getUrlImagem(game.getImage())).into(holder.imageGame);
         holder.cardViewGame.setTag(game);
 
     }

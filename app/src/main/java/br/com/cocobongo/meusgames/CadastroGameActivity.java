@@ -1,8 +1,10 @@
 package br.com.cocobongo.meusgames;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -151,14 +153,12 @@ public class CadastroGameActivity extends BaseActivity {
 
         if (101 == requestCode && null != data) {
             Uri uriFoto = data.getData();
-            game.setImage(uriFoto.toString());
+            Picasso.with(this).load(uriFoto.toString()).into(cadastroGameImagem);
+            game.setImage(convertMediaUriToPath(uriFoto));
 
         }
         else if(102 == requestCode && null != mImageCaptureUri){
             game.setImage(mImageCaptureUri.toString());
-        }
-
-        if(null != game.getImage()){
             Picasso.with(this).load(game.getImage()).into(cadastroGameImagem);
         }
 
@@ -180,7 +180,9 @@ public class CadastroGameActivity extends BaseActivity {
                 .split(","));
         game.setPlataformas(plataformas);
 
-        MeusGamesApplication.games.add(game);
+        final ProgressDialog progressDialog =
+                ProgressDialog.show(this, getString(R.string.app_name), "Aguarde...");
+        progressDialog.show();
 
         meusGamesAPI = new MeusGamesAPI(this);
         meusGamesAPI.cadastrarGame(game, new FutureCallback<Response<Game>>() {
@@ -188,13 +190,42 @@ public class CadastroGameActivity extends BaseActivity {
             public void onCompleted(Exception e, Response<Game> result) {
 
                 if (Constantes.HTTP_CODE_200_SUCCESS != result.getHeaders().code()) {
+
+                    if (progressDialog.isShowing()) {
+                        progressDialog.dismiss();
+                    }
+
                     Toast.makeText(getBaseContext(), "Erro ao cadastrar o jogo",
                             Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                Toast.makeText(getBaseContext(), "Game cadastrado com sucesso!",
-                        Toast.LENGTH_SHORT).show();
+                if (null != CadastroGameActivity.this.game.getImage()) {
+                    upload(result.getResult(), CadastroGameActivity.this.game.getImage(), progressDialog);
+                }
+                else{
+                    Toast.makeText(getBaseContext(), "Game cadastrado com sucesso!",
+                            Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
+
+    }
+
+    private void upload(Game game, String path, final ProgressDialog progressDialog){
+        meusGamesAPI.upload(game.getId(), new File(path), new FutureCallback<Response<Game>>() {
+            @Override
+            public void onCompleted(Exception e, Response<Game> result) {
+
+                if (null != progressDialog && progressDialog.isShowing()) {
+                    progressDialog.dismiss();
+                }
+
+                if (null == result || Constantes.HTTP_CODE_200_SUCCESS != result.getHeaders().code()) {
+                    Toast.makeText(getBaseContext(), "Erro ao enviar imagem do jogo",
+                            Toast.LENGTH_SHORT).show();
+                }
 
                 Intent intent = new Intent();
                 intent.putExtra("result", true);
@@ -204,6 +235,21 @@ public class CadastroGameActivity extends BaseActivity {
 
             }
         });
-
     }
+
+    /**
+     * Recupera o path de um arquivo, dado a URI de retorno da API do Android
+     * @param uri
+     * @return
+     */
+    private String convertMediaUriToPath(Uri uri){
+        String [] proj = {MediaStore.Images.Media.DATA};
+        Cursor cursor = getContentResolver().query(uri, proj, null, null, null);
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        String path = cursor.getString(column_index);
+        cursor.close();
+        return path;
+    }
+
 }

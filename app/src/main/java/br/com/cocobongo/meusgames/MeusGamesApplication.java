@@ -21,14 +21,12 @@ import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
  */
 public class MeusGamesApplication extends Application {
 
-    public static List<Game> games;
     public static String token;
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        games = new ArrayList<Game>();
         getToken();
         CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
                         .setDefaultFontPath("fonts/Roboto-Regular.ttf")

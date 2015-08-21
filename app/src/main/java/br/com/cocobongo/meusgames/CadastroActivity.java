@@ -17,11 +17,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import java.io.IOException;
-import java.util.HashMap;
 
 import br.com.cocobongo.meusgames.helpers.HttpHelper;
 import br.com.cocobongo.meusgames.modelos.Usuario;
-import br.com.cocobongo.meusgames.servicos.UsuarioService;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -39,6 +40,9 @@ public class GamesListFragment extends Fragment implements GamesAdapter.GamesAda
     @Bind(R.id.lista_games)
     RecyclerView listaGames;
 
+    @Bind(R.id.swipeRefreshLayout)
+    SwipeRefreshLayout swipeRefreshLayout;
+
     private GamesAdapter.GamesAdapterListener gamesAdapterListener;
     private GamesAdapter gamesAdapter;
     private MeusGamesAPI meusGamesAPI;
@@ -68,10 +72,19 @@ public class GamesListFragment extends Fragment implements GamesAdapter.GamesAda
         listaGames.setLayoutManager(layoutManager);
         listaGames.setHasFixedSize(true);  //otimiza a recycleview, falando que a dimensao do item nao muda
 
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // Refresh items
+                getGames();
+            }
+        });
+
         getGames();
+
     }
 
-    private void getGames(){
+    private void getGames() {
 
         final ProgressDialog progressDialog =
                 ProgressDialog.show(getActivity(), getString(R.string.app_name), "Aguarde...");
@@ -80,7 +93,7 @@ public class GamesListFragment extends Fragment implements GamesAdapter.GamesAda
         meusGamesAPI.games(new FutureCallback<Response<List<Game>>>() {
             @Override
             public void onCompleted(Exception e, Response<List<Game>> result) {
-                if(200 != result.getHeaders().code()){
+                if (200 != result.getHeaders().code()) {
                     Toast.makeText(getActivity(), "Não foi possível recuperar os games!",
                             Toast.LENGTH_SHORT).show();
                     return;
@@ -90,9 +103,11 @@ public class GamesListFragment extends Fragment implements GamesAdapter.GamesAda
                         GamesListFragment.this);
                 listaGames.setAdapter(gamesAdapter);
 
-                if(progressDialog.isShowing()){
+                if (progressDialog.isShowing()) {
                     progressDialog.dismiss();
                 }
+
+                swipeRefreshLayout.setRefreshing(false);
 
             }
         });
@@ -101,10 +116,9 @@ public class GamesListFragment extends Fragment implements GamesAdapter.GamesAda
     @Override
     public void onGameSelected(Game game) {
 
-        if(Helpers.isTablet(getActivity()) && gamesAdapterListener != null){
+        if (Helpers.isTablet(getActivity()) && gamesAdapterListener != null) {
             gamesAdapterListener.onGameSelected(game);
-        }
-        else{
+        } else {
             Intent intent = new Intent(getActivity(), GameActivity.class);
             intent.putExtra("game", game);
             startActivity(intent);
@@ -138,6 +152,8 @@ public class GamesListFragment extends Fragment implements GamesAdapter.GamesAda
         if (id == R.id.action_add_game) {
             Intent intent = new Intent(getActivity(), CadastroGameActivity.class);
             startActivityForResult(intent, 103);
+        } else if (id == R.id.action_sync_games) {
+            getGames();
         }
 
         return super.onOptionsItemSelected(item);

@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
+import br.com.cocobongo.meusgames.Constantes;
 import br.com.cocobongo.meusgames.R;
 import br.com.cocobongo.meusgames.modelos.Game;
 import butterknife.Bind;
@@ -85,7 +86,7 @@ public class GameDetalheFragment extends Fragment {
 
             addComentarios();
             Picasso.with(getActivity())
-                    .load(game.getImage())
+                    .load(Constantes.getUrlImagem(game.getImage()))
                     .error(R.drawable.error)
                     .placeholder(R.drawable.anon_user)
                     .into(imgGame);
