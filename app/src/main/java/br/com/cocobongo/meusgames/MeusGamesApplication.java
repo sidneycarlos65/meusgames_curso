@@ -5,15 +5,14 @@ import android.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.List;
 
-import br.com.cocobongo.meusgames.modelos.Game;
+import br.com.cocobongo.meusgames.database.DataBaseHelper;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
 /**
@@ -33,6 +32,17 @@ public class MeusGamesApplication extends Application {
                         .setFontAttrId(R.attr.fontPath)
                         .build()
         );
+
+        File fileDatabase = new File(Constantes.DATABASE_PATH);
+
+        if (!fileDatabase.exists()) {
+
+            try {
+                copyDatabase();
+            } catch (IOException e) {
+                Log.e("COPY_DATABASE", e.getMessage(), e);
+            }
+        }
 
     }
 
@@ -103,6 +113,34 @@ public class MeusGamesApplication extends Application {
         return null;
     }
 
+    private void copyDatabase() throws IOException {
+
+        File f = new File(Constantes.DATABASE_DIRECTORY);
+
+        if (!f.exists()) {
+            f.mkdirs();
+        }
+
+        //Open your local db as the input stream
+        InputStream myinput = getAssets().open("database/"+ Constantes.DATABASE_NAME);
+
+
+        //Open the empty db as the output stream
+        OutputStream myoutput = new FileOutputStream(Constantes.DATABASE_PATH);
+
+        // transfer byte to inputfile to outputfile
+        byte[] buffer = new byte[1024];
+        int length;
+        while ((length = myinput.read(buffer))>0) {
+            myoutput.write(buffer,0,length);
+        }
+
+        //Close the streams
+        myoutput.flush();
+        myoutput.close();
+        myinput.close();
+    }
+
     @Override
     public void onLowMemory() {
         super.onLowMemory();
@@ -111,5 +149,6 @@ public class MeusGamesApplication extends Application {
     @Override
     public void onTerminate() {
         super.onTerminate();
+        DataBaseHelper.destroy();
     }
 }

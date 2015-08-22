@@ -204,8 +204,14 @@ public class CadastroGameActivity extends BaseActivity {
                     upload(result.getResult(), CadastroGameActivity.this.game.getImage(), progressDialog);
                 }
                 else{
+
+                    if (progressDialog.isShowing()) {
+                        progressDialog.dismiss();
+                    }
+
                     Toast.makeText(getBaseContext(), "Game cadastrado com sucesso!",
                             Toast.LENGTH_SHORT).show();
+                    retornarListaGames();
                 }
 
             }
@@ -227,14 +233,18 @@ public class CadastroGameActivity extends BaseActivity {
                             Toast.LENGTH_SHORT).show();
                 }
 
-                Intent intent = new Intent();
-                intent.putExtra("result", true);
-                setResult(Activity.RESULT_OK, intent);
-
-                finish();
+                retornarListaGames();
 
             }
         });
+    }
+
+    private void retornarListaGames() {
+        Intent intent = new Intent();
+        intent.putExtra("result", true);
+        setResult(Activity.RESULT_OK, intent);
+
+        finish();
     }
 
     /**

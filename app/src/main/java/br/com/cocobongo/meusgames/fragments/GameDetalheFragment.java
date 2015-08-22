@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,8 +21,11 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
+import java.sql.SQLException;
+
 import br.com.cocobongo.meusgames.Constantes;
 import br.com.cocobongo.meusgames.R;
+import br.com.cocobongo.meusgames.database.GameDAO;
 import br.com.cocobongo.meusgames.modelos.Game;
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -51,7 +55,6 @@ public class GameDetalheFragment extends Fragment {
     TableLayout tableComentarios;
 
     private Game game;
-    boolean favorito = false;
 
     public static GameDetalheFragment newInstance(Game game) {
         Bundle bundle = new Bundle();
@@ -95,6 +98,16 @@ public class GameDetalheFragment extends Fragment {
 
     }
 
+    private boolean isFavorito(String gameId) {
+        try {
+            GameDAO gameDAO = new GameDAO(getActivity());
+            return null != gameDAO.findById(gameId);
+        } catch (SQLException e) {
+            Log.e("GameDetalheFragment", e.getMessage(), e);
+        }
+        return false;
+    }
+
     @OnClick(R.id.btn_ver_mais)
     public void onClickBtnVerMais(View view) {
         addComentarios();
@@ -124,25 +137,49 @@ public class GameDetalheFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_game, menu);
+
+        if(isFavorito(game.getId())){
+            MenuItem item = menu.findItem(R.id.action_favoritar);
+            item.setIcon(R.drawable.ic_favorite_white_24dp);
+        }
+
         super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
+        try {
+            int id = item.getItemId();
 
-        if (id == R.id.action_favoritar) {
-            if (!favorito) {
-                Toast.makeText(getActivity(), "Adicionado aos favoritos", Toast.LENGTH_SHORT).show();
-                item.setIcon(R.drawable.ic_favorite_white_24dp);
-                favorito = true;
-            } else {
-                Toast.makeText(getActivity(), "Removido dos favoritos", Toast.LENGTH_SHORT).show();
-                item.setIcon(R.drawable.ic_favorite_border_white_24dp);
-                favorito = false;
+            if (id == R.id.action_favoritar) {
+
+                GameDAO dao = new GameDAO(getActivity());
+                if(!isFavorito(game.getId())){
+                    boolean result = dao.add(game);
+                    String msg = getString(R.string.msg_erro_favoritar);
+
+                    if(result){
+                        msg = getString(R.string.msg_adicionado_favoritos);
+                        item.setIcon(R.drawable.ic_favorite_white_24dp);
+                    }
+                    Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    boolean result = dao.remove(game);
+                    String msg = getString(R.string.msg_erro_remover_favorito);
+                    if(result){
+                        msg = getString(R.string.msg_removido_favoritos);
+                        item.setIcon(R.drawable.ic_favorite_border_white_24dp);
+                    }
+                    Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
+                }
+
             }
-        } else if (id == R.id.action_adicionar_biblioteca) {
-            Toast.makeText(getActivity(), "Adicionado à biblioteca", Toast.LENGTH_SHORT).show();
+            else if (id == R.id.action_adicionar_biblioteca) {
+                Toast.makeText(getActivity(), "Adicionado à biblioteca", Toast.LENGTH_SHORT).show();
+            }
+        } catch (SQLException e) {
+            Log.e("GameDetalheFragment", e.getMessage(), e);
         }
 
         return super.onOptionsItemSelected(item);

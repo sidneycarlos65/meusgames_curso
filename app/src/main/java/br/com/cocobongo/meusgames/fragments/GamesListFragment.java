@@ -23,6 +23,7 @@ import com.koushikdutta.ion.Response;
 import java.util.List;
 
 import br.com.cocobongo.meusgames.CadastroGameActivity;
+import br.com.cocobongo.meusgames.Constantes;
 import br.com.cocobongo.meusgames.GameActivity;
 import br.com.cocobongo.meusgames.R;
 import br.com.cocobongo.meusgames.adapters.GamesAdapter;
@@ -75,39 +76,38 @@ public class GamesListFragment extends Fragment implements GamesAdapter.GamesAda
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                // Refresh items
-                getGames();
+                getGames(null);
+                swipeRefreshLayout.setRefreshing(false);
             }
         });
 
-        getGames();
+        final ProgressDialog progressDialog = ProgressDialog.show(getActivity(),
+                getString(R.string.app_name), "Aguarde...");
+        getGames(progressDialog);
 
     }
 
-    private void getGames() {
-
-        final ProgressDialog progressDialog =
-                ProgressDialog.show(getActivity(), getString(R.string.app_name), "Aguarde...");
+    private void getGames(final ProgressDialog progressDialog) {
 
         meusGamesAPI = new MeusGamesAPI(getActivity());
         meusGamesAPI.games(new FutureCallback<Response<List<Game>>>() {
             @Override
             public void onCompleted(Exception e, Response<List<Game>> result) {
-                if (200 != result.getHeaders().code()) {
+
+                if (null != progressDialog && progressDialog.isShowing()) {
+                    progressDialog.dismiss();
+                }
+
+                if (null == result
+                        || Constantes.HTTP_CODE_200_SUCCESS != result.getHeaders().code()) {
                     Toast.makeText(getActivity(), "Não foi possível recuperar os games!",
-                            Toast.LENGTH_SHORT).show();
+                            Toast.LENGTH_LONG).show();
                     return;
                 }
 
                 gamesAdapter = new GamesAdapter(result.getResult(), getActivity(),
                         GamesListFragment.this);
                 listaGames.setAdapter(gamesAdapter);
-
-                if (progressDialog.isShowing()) {
-                    progressDialog.dismiss();
-                }
-
-                swipeRefreshLayout.setRefreshing(false);
 
             }
         });
@@ -153,7 +153,9 @@ public class GamesListFragment extends Fragment implements GamesAdapter.GamesAda
             Intent intent = new Intent(getActivity(), CadastroGameActivity.class);
             startActivityForResult(intent, 103);
         } else if (id == R.id.action_sync_games) {
-            getGames();
+            final ProgressDialog progressDialog = ProgressDialog.show(getActivity(),
+                    getString(R.string.app_name), "Aguarde...");
+            getGames(progressDialog);
         }
 
         return super.onOptionsItemSelected(item);
@@ -167,7 +169,9 @@ public class GamesListFragment extends Fragment implements GamesAdapter.GamesAda
 
         if (103 == requestCode && resultCode == Activity.RESULT_OK && null != gamesAdapter) {
 //            gamesAdapter.notifyDataSetChanged();
-            getGames();
+            final ProgressDialog progressDialog = ProgressDialog.show(getActivity(),
+                    getString(R.string.app_name), "Aguarde...");
+            getGames(progressDialog);
         }
     }
 }

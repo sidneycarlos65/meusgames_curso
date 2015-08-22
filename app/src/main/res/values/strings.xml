@@ -43,4 +43,8 @@
     <string name="hint_digite_email">Digite seu e-mail</string>
     <string name="hint_digite_senha">Digite sua senha</string>
     <string name="label_enviar">Enviar</string>
+    <string name="msg_adicionado_favoritos">Adicionado aos favoritos</string>
+    <string name="msg_erro_favoritar">Erro ao Favoritar</string>
+    <string name="msg_erro_remover_favorito">Erro ao remover dos favoritos</string>
+    <string name="msg_removido_favoritos">Removido dos favoritos</string>
 </resources>
