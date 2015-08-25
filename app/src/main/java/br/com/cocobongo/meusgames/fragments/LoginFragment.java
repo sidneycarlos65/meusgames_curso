@@ -132,7 +132,7 @@ public class LoginFragment extends Fragment {
                     MeusGamesApplication app =
                             (MeusGamesApplication) getActivity().getApplication();
                     Usuario usuario = result.getResult();
-                    app.saveToken(usuario.getToken(), usuario.getValidadeToken());
+                    app.saveToken(usuario.getToken(), usuario.getValidadeToken(), usuario.getId());
 
                     listener.onLogin(usuario);
                 }

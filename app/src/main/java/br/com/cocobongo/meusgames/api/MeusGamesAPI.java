@@ -59,4 +59,12 @@ public class MeusGamesAPI {
 
     }
 
+    public void registrarDeviceToken(String token, String idUsuario,
+                                     FutureCallback<Usuario> callback){
+        String url = String.format(Constantes.URL_DEVICE_TOKEN, idUsuario, token);
+        String tokenAcesso = MeusGamesApplication.token;
+        Ion.with(context).load(url).addHeader("X-Access-Token", tokenAcesso).as(Usuario.class)
+                .setCallback(callback);
+    }
+
 }

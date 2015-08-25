@@ -22,6 +22,9 @@ public class Usuario {
     @SerializedName("exp")
     private long validadeToken;
 
+    private String deviceToken;
+    private String plataforma;
+
     public String getId() {
         return id;
     }
@@ -100,5 +103,21 @@ public class Usuario {
 
     public void setValidadeToken(long validadeToken) {
         this.validadeToken = validadeToken;
+    }
+
+    public String getDeviceToken() {
+        return deviceToken;
+    }
+
+    public void setDeviceToken(String deviceToken) {
+        this.deviceToken = deviceToken;
+    }
+
+    public String getPlataforma() {
+        return plataforma;
+    }
+
+    public void setPlataforma(String plataforma) {
+        this.plataforma = plataforma;
     }
 }

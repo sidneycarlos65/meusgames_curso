@@ -21,6 +21,7 @@ import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 public class MeusGamesApplication extends Application {
 
     public static String token;
+    public static String idUsuario;
 
     @Override
     public void onCreate() {
@@ -46,7 +47,7 @@ public class MeusGamesApplication extends Application {
 
     }
 
-    public void saveToken(String tokenParam, long dataValidade){
+    public void saveToken(String tokenParam, long dataValidade, String idUsuario){
 
         try{
 
@@ -58,7 +59,7 @@ public class MeusGamesApplication extends Application {
             }
 
             StringBuilder sb = new StringBuilder();
-            sb.append(tokenParam).append("#").append(dataValidade);
+            sb.append(tokenParam).append("#").append(dataValidade).append("#").append(idUsuario);
 
             FileOutputStream fileOutputStream = new FileOutputStream(file);
             fileOutputStream.write(sb.toString().getBytes("UTF-8"));
@@ -90,6 +91,7 @@ public class MeusGamesApplication extends Application {
             }
 
             token = stringSplit[0];
+            idUsuario = stringSplit[2];
 
         } catch (IOException e) {
             Log.e("MeusGamesApplication", e.getMessage(), e);

@@ -229,8 +229,8 @@ public class CadastroGameActivity extends BaseActivity {
                 }
 
                 if (null == result || Constantes.HTTP_CODE_200_SUCCESS != result.getHeaders().code()) {
-                    Toast.makeText(getBaseContext(), "Erro ao enviar imagem do jogo",
-                            Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getBaseContext(), R.string.msg_erro_enviar_imagem_jogo,
+                            Toast.LENGTH_LONG).show();
                 }
 
                 retornarListaGames();
