@@ -84,6 +84,8 @@ public class MainActivity extends BaseActivity implements LoginFragment.LoginFra
     }
 
     private void checkRegistroGcm(){
+        MeusGamesApplication meusGamesApplication = (MeusGamesApplication) getApplication();
+        meusGamesApplication.getToken();
         String deviceToken = NotificationHelper.getRegistrationId(getApplicationContext());
         if(TextUtils.isEmpty(deviceToken)){
             GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(getApplicationContext());
@@ -93,6 +95,9 @@ public class MainActivity extends BaseActivity implements LoginFragment.LoginFra
                     registrarGcm();
                 }
             }).execute(getString(R.string.sender_id));
+        }
+        else{
+            registrarGcm();
         }
     }
 

@@ -5,10 +5,10 @@ package br.com.cocobongo.meusgames;
  */
 public class Constantes {
 
-    public static final String URL = "http://192.168.0.13:3000";
+    public static final String URL = "http://192.168.0.6:3000";
     public static final String URL_LOGIN = URL + "/users/login";
     public static final String URL_SIGNUP = URL + "/users/signup";
-    public static final String URL_DEVICE_TOKEN = URL + "/users/%s/token/%s";
+    public static final String URL_DEVICE_TOKEN = URL + "/users/%s/deviceToken/%s";
     public static final String URL_GAMES = URL + "/games";
     public static final String URL_GAMES_UPLOAD_IMAGE = URL + "/games/uploadPhoto/";
 
