@@ -1,6 +1,10 @@
 package br.com.cocobongo.meusgames;
 
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -13,10 +17,16 @@ import android.widget.Toast;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import java.io.IOException;
+import java.util.List;
 
 import br.com.cocobongo.meusgames.helpers.HttpHelper;
 import br.com.cocobongo.meusgames.modelos.Usuario;
@@ -24,7 +34,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class CadastroActivity extends BaseActivity {
+public class CadastroActivity extends BaseActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     @Bind(R.id.edit_nome)
     EditText editNome;
@@ -44,12 +54,33 @@ public class CadastroActivity extends BaseActivity {
     @Bind(R.id.edit_confirmar_senha)
     EditText editConfirmarSenha;
 
+    private GoogleApiClient mGoogleApiClient;
+    private Location mCurrentLocation;
+    private JsonObject jsonObject;
+    private LocationRequest mLocationRequest;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cadastro);
         ButterKnife.bind(this);
         initToolbar();
+        createLocationRequest();
+        jsonObject = new JsonObject();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        buildGoogleApiClient();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
+        }
     }
 
     @OnClick(R.id.btn_ok)
@@ -61,11 +92,15 @@ public class CadastroActivity extends BaseActivity {
             String endereco = editEndereco.getText().toString();
             String senha = editSenha.getText().toString();
 
-            JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("nome", nome);
             jsonObject.addProperty("email", email);
             jsonObject.addProperty("senha", senha);
             jsonObject.addProperty("endereco", endereco);
+
+            if (mCurrentLocation != null) {
+                jsonObject.addProperty("latitude", mCurrentLocation.getLatitude());
+                jsonObject.addProperty("longitude", mCurrentLocation.getLongitude());
+            }
 
             new CadastroUsuarioTask().execute(jsonObject);
 
@@ -125,6 +160,64 @@ public class CadastroActivity extends BaseActivity {
         }
 
         return error;
+
+    }
+
+    protected void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+        mGoogleApiClient.connect();
+    }
+
+    protected void createLocationRequest() {
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(10000);
+        mLocationRequest.setFastestInterval(5000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    }
+
+    protected void startLocationUpdates() {
+//        LocationServices.GeofencingApi - pega a localizacao apenas do GPS
+        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient,
+                mLocationRequest, this);
+    }
+
+    protected void stopLocationUpdates() {
+        LocationServices.FusedLocationApi.removeLocationUpdates(
+                mGoogleApiClient, this);
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        mCurrentLocation = location;
+        new GeocoderTask(CadastroActivity.this).execute(mCurrentLocation);
+        stopLocationUpdates();
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+
+        mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(
+                mGoogleApiClient);
+        if (mCurrentLocation != null) {
+            jsonObject.addProperty("latitude", mCurrentLocation.getLatitude());
+            jsonObject.addProperty("longitude", mCurrentLocation.getLongitude());
+        }
+
+        startLocationUpdates();
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
 
     }
 
@@ -206,6 +299,41 @@ public class CadastroActivity extends BaseActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public class GeocoderTask extends AsyncTask<Location, Void, String>{
+
+        private Context context;
+
+        public GeocoderTask(Context context) {
+            this.context = context;
+        }
+
+        @Override
+        protected String doInBackground(Location... params) {
+            try {
+                Location location = params[0];
+                Geocoder geocoder = new Geocoder(context);
+                List<Address> enderecos = geocoder.getFromLocation(location.getLatitude(),
+                        location.getLongitude(), 1);
+
+                if(null != enderecos && !enderecos.isEmpty()){
+                    Address endereco = enderecos.get(0);
+                    return endereco.getAddressLine(0) + ", " + endereco.getAddressLine(1);
+                }
+            } catch (IOException e) {
+                Log.e("GeocoderTask", e.getMessage(), e);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            if(null != result){
+                editEndereco.setText(result);
+            }
+        }
     }
 
 }

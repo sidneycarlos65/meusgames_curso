@@ -8,4 +8,8 @@
     <item android:id="@+id/action_add_game" android:icon="@drawable/ic_add_white_24dp"
         android:title="Adicionar Game"
         android:orderInCategory="101" app:showAsAction="ifRoom"/>
+
+    <item android:id="@+id/action_map" android:title="@string/action_amigos"
+        app:showAsAction="never" />
+
 </menu>

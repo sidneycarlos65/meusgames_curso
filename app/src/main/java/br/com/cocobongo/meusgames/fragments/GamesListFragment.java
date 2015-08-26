@@ -25,6 +25,7 @@ import java.util.List;
 import br.com.cocobongo.meusgames.CadastroGameActivity;
 import br.com.cocobongo.meusgames.Constantes;
 import br.com.cocobongo.meusgames.GameActivity;
+import br.com.cocobongo.meusgames.MapsActivity;
 import br.com.cocobongo.meusgames.R;
 import br.com.cocobongo.meusgames.adapters.GamesAdapter;
 import br.com.cocobongo.meusgames.api.MeusGamesAPI;
@@ -152,10 +153,15 @@ public class GamesListFragment extends Fragment implements GamesAdapter.GamesAda
         if (id == R.id.action_add_game) {
             Intent intent = new Intent(getActivity(), CadastroGameActivity.class);
             startActivityForResult(intent, 103);
-        } else if (id == R.id.action_sync_games) {
+        }
+        else if (id == R.id.action_sync_games) {
             final ProgressDialog progressDialog = ProgressDialog.show(getActivity(),
                     getString(R.string.app_name), "Aguarde...");
             getGames(progressDialog);
+        }
+        else if (id == R.id.action_map) {
+            Intent intent = new Intent(getActivity(), MapsActivity.class);
+            startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);
