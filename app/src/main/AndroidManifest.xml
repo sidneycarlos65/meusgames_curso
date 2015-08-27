@@ -61,12 +61,30 @@
 
         <service android:name=".gcm.GcmIntentService" />
 
-        <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyBEgs47KEAoZPKRV1MopqBvv3ihltt7r4M"/>
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyBEgs47KEAoZPKRV1MopqBvv3ihltt7r4M" />
 
         <activity
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps" >
         </activity>
+
+        <receiver
+            android:name=".broadcast.BootReceiver"
+            android:enabled="true"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name=".broadcast.BootService"
+            android:enabled="true"
+            android:exported="false" >
+        </service>
     </application>
 
 </manifest>

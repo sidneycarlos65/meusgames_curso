@@ -1,7 +1,14 @@
 package br.com.cocobongo.meusgames;
 
 import android.app.Application;
+import android.net.Uri;
+import android.text.TextUtils;
 import android.util.Log;
+
+import com.koushikdutta.async.http.AsyncHttpRequest;
+import com.koushikdutta.async.http.Headers;
+import com.koushikdutta.ion.Ion;
+import com.koushikdutta.ion.loader.AsyncHttpRequestFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -28,6 +35,7 @@ public class MeusGamesApplication extends Application {
         super.onCreate();
 
         getToken();
+        initIon();
         CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
                         .setDefaultFontPath("fonts/Roboto-Regular.ttf")
                         .setFontAttrId(R.attr.fontPath)
@@ -141,6 +149,24 @@ public class MeusGamesApplication extends Application {
         myoutput.flush();
         myoutput.close();
         myinput.close();
+    }
+
+    private void initIon(){
+        final AsyncHttpRequestFactory current = Ion.getDefault(getApplicationContext())
+                .configure().getAsyncHttpRequestFactory();
+        Ion.getDefault(getApplicationContext()).configure().setAsyncHttpRequestFactory(new AsyncHttpRequestFactory() {
+            @Override
+            public AsyncHttpRequest createAsyncHttpRequest(Uri uri, String method, Headers headers) {
+                AsyncHttpRequest ret = current.createAsyncHttpRequest(uri, method, headers);
+                ret.setTimeout(10000);
+
+                if(!TextUtils.isEmpty(token)){
+                    ret.addHeader("X-Access-Token", token);
+                }
+
+                return ret;
+            }
+        });
     }
 
     @Override

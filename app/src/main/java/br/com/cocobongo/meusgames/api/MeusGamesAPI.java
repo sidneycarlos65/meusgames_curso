@@ -36,24 +36,18 @@ public class MeusGamesAPI {
     }
 
     public void games(FutureCallback<Response<List<Game>>> callback){
-        String token = MeusGamesApplication.token;
-        Ion.with(context).load(Constantes.URL_GAMES).addHeader("X-Access-Token", token)
-                .as(new TypeToken<List<Game>>() {
-                })
+        Ion.with(context).load(Constantes.URL_GAMES).as(new TypeToken<List<Game>>() {})
                 .withResponse().setCallback(callback);
 
     }
 
     public void cadastrarGame(Game game, FutureCallback<Response<Game>> callback){
-        String token = MeusGamesApplication.token;
-        Ion.with(context).load(Constantes.URL_GAMES).addHeader("X-Access-Token", token)
-                .setJsonPojoBody(game).as(Game.class).withResponse().setCallback(callback);
+        Ion.with(context).load(Constantes.URL_GAMES).setJsonPojoBody(game).as(Game.class)
+                .withResponse().setCallback(callback);
     }
 
     public void upload(String idGame, File image, FutureCallback<Response<Game>> callback){
-        String token = MeusGamesApplication.token;
         Ion.with(context).load(Constantes.URL_GAMES_UPLOAD_IMAGE + idGame)
-                .addHeader("X-Access-Token", token)
                 .setMultipartFile("file", image).as(Game.class).withResponse()
                 .setCallback(callback);
 
@@ -62,9 +56,15 @@ public class MeusGamesAPI {
     public void registrarDeviceToken(String token, String idUsuario,
                                      FutureCallback<Usuario> callback){
         String url = String.format(Constantes.URL_DEVICE_TOKEN, idUsuario, token);
-        String tokenAcesso = MeusGamesApplication.token;
-        Ion.with(context).load(url).addHeader("X-Access-Token", tokenAcesso).as(Usuario.class)
+        Ion.with(context).load(url).as(Usuario.class)
                 .setCallback(callback);
+    }
+
+    public void getAmigos(FutureCallback<List<Usuario>> callback){
+        String tokenAcesso = MeusGamesApplication.token;
+        // token setado no header pelo Application
+        Ion.with(context).load(Constantes.URL_AMIGOS)
+                .as(new TypeToken<List<Usuario>>() {}).setCallback(callback);
     }
 
 }
