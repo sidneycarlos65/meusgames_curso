@@ -14,6 +14,7 @@ import java.util.List;
 
 import br.com.cocobongo.meusgames.Constantes;
 import br.com.cocobongo.meusgames.MeusGamesApplication;
+import br.com.cocobongo.meusgames.modelos.Comentario;
 import br.com.cocobongo.meusgames.modelos.Game;
 import br.com.cocobongo.meusgames.modelos.Usuario;
 
@@ -65,6 +66,19 @@ public class MeusGamesAPI {
         // token setado no header pelo Application
         Ion.with(context).load(Constantes.URL_AMIGOS)
                 .as(new TypeToken<List<Usuario>>() {}).setCallback(callback);
+    }
+
+    public void getComentarios(String idGame, FutureCallback<List<Comentario>> callback){
+        String url = String.format(Constantes.URL_COMENTARIO, idGame);
+        Ion.with(context).load(url).as(new TypeToken<List<Comentario>>() {})
+                .setCallback(callback);
+    }
+
+    public void addComentario(String idGame, Comentario comentario,
+                              FutureCallback<Comentario> callback){
+        String url = String.format(Constantes.URL_COMENTARIO, idGame);
+        Ion.with(context).load(url).setJsonPojoBody(comentario).as(Comentario.class)
+                .setCallback(callback);
     }
 
 }

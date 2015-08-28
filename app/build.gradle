@@ -8,6 +8,12 @@ android {
             storeFile file('/home/gu/git/meusgames_curso/keystore.jks')
             storePassword 'h3npis11'
         }
+        release {
+            keyAlias 'keystore_meus_games'
+            keyPassword 'h3npis11'
+            storeFile file('/home/gu/git/meusgames_curso/keystore.jks')
+            storePassword 'h3npis11'
+        }
     }
     compileSdkVersion 22
     buildToolsVersion '22.0.1'
@@ -22,11 +28,16 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
         debug {
             signingConfig signingConfigs.debug
         }
     }
+    lintOptions {
+        abortOnError false
+    }
+
 }
 
 dependencies {

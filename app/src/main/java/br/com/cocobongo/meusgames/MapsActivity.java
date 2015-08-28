@@ -29,6 +29,7 @@ import java.util.List;
 
 import br.com.cocobongo.meusgames.api.MeusGamesAPI;
 import br.com.cocobongo.meusgames.modelos.Usuario;
+import butterknife.ButterKnife;
 
 public class MapsActivity extends BaseActivity implements RoutingListener {
 
@@ -43,6 +44,7 @@ public class MapsActivity extends BaseActivity implements RoutingListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        ButterKnife.bind(this);
         initToolbar();
 
         progressDialog = ProgressDialog.show(this, getString(R.string.app_name), "Aguarde...");
@@ -81,8 +83,8 @@ public class MapsActivity extends BaseActivity implements RoutingListener {
         });
     }
 
-    private void addAmigosToMap(){
-        if(null == googleMap || usuarios == null || hasAddAmigos){
+    private void addAmigosToMap() {
+        if (null == googleMap || usuarios == null || hasAddAmigos) {
             return;
         }
 
@@ -90,7 +92,7 @@ public class MapsActivity extends BaseActivity implements RoutingListener {
 
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
 
-        for (Usuario usuario: usuarios) {
+        for (Usuario usuario : usuarios) {
             LatLng latLng = new LatLng(usuario.getLatitude(), usuario.getLongitude());
             MarkerOptions markerOptions = new MarkerOptions();
             markerOptions.title(usuario.getNome());
@@ -108,7 +110,7 @@ public class MapsActivity extends BaseActivity implements RoutingListener {
         googleMap.moveCamera(cameraUpdate);
     }
 
-    private void initGoogleMap(final GoogleMap googleMap){
+    private void initGoogleMap(final GoogleMap googleMap) {
         googleMap.setMyLocationEnabled(true);
         UiSettings uiSettings = googleMap.getUiSettings();
         uiSettings.setMyLocationButtonEnabled(true);
@@ -169,7 +171,7 @@ public class MapsActivity extends BaseActivity implements RoutingListener {
         polylineOptions1.width(10);
         polylineOptions1.addAll(polylineOptions.getPoints());
 
-        if(polyline != null){
+        if (polyline != null) {
             polyline.remove();
         }
 

@@ -19,13 +19,18 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.koushikdutta.async.future.FutureCallback;
 import com.squareup.picasso.Picasso;
 
 import java.sql.SQLException;
+import java.util.List;
 
+import br.com.cocobongo.meusgames.ComentariosActivity;
 import br.com.cocobongo.meusgames.Constantes;
 import br.com.cocobongo.meusgames.R;
+import br.com.cocobongo.meusgames.api.MeusGamesAPI;
 import br.com.cocobongo.meusgames.database.GameDAO;
+import br.com.cocobongo.meusgames.modelos.Comentario;
 import br.com.cocobongo.meusgames.modelos.Game;
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -110,22 +115,33 @@ public class GameDetalheFragment extends Fragment {
 
     @OnClick(R.id.btn_ver_mais)
     public void onClickBtnVerMais(View view) {
-        addComentarios();
+        Intent intent = new Intent(getActivity(), ComentariosActivity.class);
+        intent.putExtra("game", game);
+        startActivity(intent);
     }
 
     private void addComentarios() {
-        for (int i = 0; i < 3; i++) {
-            TableRow row = (TableRow) LayoutInflater.from(getActivity()).inflate(R.layout.row_comentario,
-                    tableComentarios, false);
-            ImageView imgUser = (ImageView) row.findViewById(R.id.img_user);
-            TextView nome = (TextView) row.findViewById(R.id.txt_nome_usuario);
-            TextView comentario = (TextView) row.findViewById(R.id.txt_comentario);
+        new MeusGamesAPI(getActivity()).getComentarios(game.getId(), new FutureCallback<List<Comentario>>() {
+            @Override
+            public void onCompleted(Exception e, List<Comentario> result) {
+                int tamanho = result.size();
+                if(tamanho > 3){
+                    tamanho = 3;
+                }
+                for (int i = 0; i < tamanho; i++) {
+                    TableRow row = (TableRow) LayoutInflater.from(getActivity()).inflate(R.layout.row_comentario,
+                            tableComentarios, false);
+                    ImageView imgUser = (ImageView) row.findViewById(R.id.img_user);
+                    TextView nome = (TextView) row.findViewById(R.id.txt_nome_usuario);
+                    TextView comentario = (TextView) row.findViewById(R.id.txt_comentario);
 
-            nome.setText("Usuário " + i);
-            comentario.setText("Comentário " + i);
+                    nome.setText(result.get(i).getNomeUsuario());
+                    comentario.setText(result.get(i).getDescricao());
 
-            tableComentarios.addView(row);
-        }
+                    tableComentarios.addView(row);
+                }
+            }
+        });
     }
 
     @Override

@@ -53,4 +53,6 @@
     <string name="msg_notificacao_novo_game">Novo game cadastrado</string>
     <string name="title_activity_maps">Amigos</string>
     <string name="action_amigos">Amigos</string>
+    <string name="title_activity_comentarios">Comentários</string>
+    <string name="msg_deixe_seu_comentario">Deixe aqui o seu comentário...</string>
 </resources>

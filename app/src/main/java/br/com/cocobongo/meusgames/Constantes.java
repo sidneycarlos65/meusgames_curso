@@ -12,6 +12,7 @@ public class Constantes {
     public static final String URL_AMIGOS = URL + "/users/amigos";
     public static final String URL_GAMES = URL + "/games";
     public static final String URL_GAMES_UPLOAD_IMAGE = URL + "/games/uploadPhoto/";
+    public static final String URL_COMENTARIO = URL + "/games/%s/comment";
 
     public static String getUrlImagem(String imagem){
         StringBuilder sb = new StringBuilder(URL);
